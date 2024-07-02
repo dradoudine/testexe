@@ -1,0 +1,25 @@
+name: Download a binary
+on:
+  release:
+    types:
+      - created
+jobs:
+  download-and-add-artifact:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download file
+        run: |
+          # Téléchargez le fichier depuis l'URL
+          curl -L -o "tsmaster_${{ github.ref_name }}.exe" "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
+
+      - name: Add tsmaster to release assets
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }} #GitHub token
+          file: tsmaster_${{ github.ref_name }}.exe
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+          release_name: release ${{ github.ref_name }}
+          
