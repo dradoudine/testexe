@@ -10,8 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
     # Step 2: Download the aaa.exe file from the URL
-    - name: Download aaa.exe
+    - name: Download tsmaster.exe
       run:
         wget -q -O tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
 
