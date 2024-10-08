@@ -1,25 +1,63 @@
-name: Download a binary
+name: Check, Rename and Create Release
+
 on:
-  release:
-    types:
-      - created
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # Runs once a day at midnight
+
 jobs:
-  download-and-add-artifact:
+  create_release:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download file
-        run: |
-          # Téléchargez le fichier depuis l'URL
-          curl -L -o "tsmaster_${{ github.ref_name }}.exe" "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
+    # Step 2: Download the aaa.exe file from the URL
+    - name: Download aaa.exe
+      run:
+        wget -q -O tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
 
-      - name: Add tsmaster to release assets
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }} #GitHub token
-          file: tsmaster_${{ github.ref_name }}.exe
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
-          release_name: release ${{ github.ref_name }}
-          
+    # Step 3: Extract the version from the executable file
+    - name: Extract exe version
+      id: get_version
+      run: |
+        # Install exiftool to read the file's metadata (product version)
+        sudo apt-get install -y exiftool
+        # Extract the version from the metadata
+        version=$(exiftool tsmaster.exe | grep "Product Version" | awk '{print $4}')
+        echo "Version found: $version"
+        # Replace dots with underscores (e.g., 10.1 becomes 10_1)
+        version_sanitized=$(echo $version | tr '.' '_')
+        echo "Sanitized version: $version_sanitized"
+        # Set the output for the extracted version and sanitized version
+        echo "::set-output name=version::$version"
+        echo "::set-output name=version_sanitized::$version_sanitized"
+
+    # Step 4: Rename the downloaded file based on the extracted version
+    - name: Rename file
+      run: mv tsmaster.exe "tsmaster_v${{ steps.get_version.outputs.version_sanitized }}.exe"
+
+    # Step 5: Check if a release with the extracted version already exists
+    - name: Check if release exists
+      id: check_release
+      run: |
+        # Use GitHub CLI to check if a release with the version tag exists
+        release_exists=$(gh release list | grep "v${{ steps.get_version.outputs.version }}")
+        if [ -z "$release_exists" ]; then
+          echo "Release does not exist."
+          echo "::set-output name=exists::false"
+        else
+          echo "Release already exists."
+          echo "::set-output name=exists::true"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # Step 6: If the release does not exist, create it and upload the renamed file as an asset
+    - name: Create GitHub Release
+      if: steps.check_release.outputs.exists == 'false'
+      run: |
+        # Create a new GitHub release with the extracted version as the tag and upload the renamed file
+        gh release create "v${{ steps.get_version.outputs.version }}" \
+        --title "v${{ steps.get_version.outputs.version }}" \
+        --notes "Release for version v${{ steps.get_version.outputs.version }}" \
+        "tsmaster_v${{ steps.get_version.outputs.version_sanitized }}.exe"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
