@@ -10,13 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Check GitHub CLI version
+      run: gh --version
     # Step 1: Checkout the repository
     - name: Checkout repository
       uses: actions/checkout@v3
     # Step 2: Download the aaa.exe file from the URL
     - name: Download aaa.exe
       run:
-        wget -q -O tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
+        #wget -q -O tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
+        wget -q -O tsmaster.exe "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.1/LLVM-19.1.1-win64.exe"
 
     # Step 3: Extract the version from the executable file
     - name: Extract exe version
@@ -42,16 +45,21 @@ jobs:
     - name: Check if release exists
       id: check_release
       run: |
-        # Use GitHub CLI to check if a release with the version tag exists
-        release_exists=$(gh release list | grep "v${{ steps.get_version.outputs.version }}")
-        if [ -z "$release_exists" ]; then
-          echo "Release does not exist."
-          echo "::set-output name=exists::false"
-        else
-          echo "Release already exists."
-          echo "::set-output name=exists::true"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # Use GitHub CLI to check if a release with the version tag exists
+    echo "Checking for releases with the version tag..."
+    releases=$(gh release list)
+    echo "Available releases:"
+    echo "$releases"
+    
+    release_exists=$(echo "$releases" | grep "v${{ steps.get_version.outputs.version }}")
+
+    if [ -z "$release_exists" ]; then
+      echo "Release does not exist."
+      echo "::set-output name=exists::false"
+    else
+      echo "Release already exists."
+      echo "::set-output name=exists::true"
+    fi
 
     # Step 6: If the release does not exist, create it and upload the renamed file as an asset
     - name: Create GitHub Release
