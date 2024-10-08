@@ -10,12 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      
     # Step 2: Download the aaa.exe file from the URL
-    - name: Download tsmaster.exe
+    - name: Download aaa.exe
       run:
         wget -q -O tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
 
@@ -29,7 +25,7 @@ jobs:
         version=$(exiftool tsmaster.exe | grep "Product Version" | awk '{print $4}')
         echo "Version found: $version"
         # Replace dots with underscores (e.g., 10.1 becomes 10_1)
-        version_sanitized=$(echo $version | tr '.' '_')
+        version_sanitized=$(echo $version | tr '.' '_' | sed 's/[^a-zA-Z0-9_]*//g')
         echo "Sanitized version: $version_sanitized"
         # Set the output for the extracted version and sanitized version
         echo "::set-output name=version::$version"
