@@ -14,7 +14,7 @@ jobs:
       run: gh --version
     # Step 1: Checkout the repository
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     # Step 2: Download the aaa.exe file from the URL
     - name: Download aaa.exe
       run:
@@ -34,8 +34,7 @@ jobs:
         version_sanitized=$(echo $version | tr '.' '_' | sed 's/[^a-zA-Z0-9_]*//g')
         echo "Sanitized version: $version_sanitized"
         # Set the output for the extracted version and sanitized version
-        echo "::set-output name=version::$version"
-        echo "::set-output name=version_sanitized::$version_sanitized"
+        echo "{version}={$version}" >> $GITHUB_OUTPUT
 
     # Step 4: Rename the downloaded file based on the extracted version
     - name: Rename file
@@ -44,6 +43,8 @@ jobs:
     # Step 5: Check if a release with the extracted version already exists
     - name: Check if release exists
       id: check_release
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         # Use GitHub CLI to check if a release with the version tag exists
         echo "Checking for releases with the version tag..."
@@ -55,10 +56,10 @@ jobs:
 
         if [ -z "$release_exists" ]; then
          echo "Release does not exist."
-         echo "::set-output name=exists::false"
+         echo "{exists}={false}" >> $GITHUB_OUTPUT
         else
           echo "Release already exists."
-          echo "::set-output name=exists::true"
+          echo "{exists}={true}" >> $GITHUB_OUTPUT
         fi
 
     # Step 6: If the release does not exist, create it and upload the renamed file as an asset
