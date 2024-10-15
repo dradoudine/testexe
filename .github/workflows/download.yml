@@ -19,6 +19,7 @@ jobs:
     - name: Download aaa.exe
       run:
         #wget -q -O tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
+        
         wget -q -O tsmaster.exe "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.1/LLVM-19.1.1-win64.exe"
 
     # Step 3: Extract the version from the executable file
@@ -26,15 +27,16 @@ jobs:
       id: get_version
       run: |
         # Install exiftool to read the file's metadata (product version)
-        sudo apt-get install -y exiftool
+        sudo apt-get install -y wine
         # Extract the version from the metadata
-        version=$(exiftool tsmaster.exe | grep "Product Version" | awk '{print $4}')
+        version=$(wine tsmaster.exe --version 2>&1)
         echo "Version found: $version"
         # Replace dots with underscores (e.g., 10.1 becomes 10_1)
         version_sanitized=$(echo $version | tr '.' '_' | sed 's/[^a-zA-Z0-9_]*//g')
         echo "Sanitized version: $version_sanitized"
         # Set the output for the extracted version and sanitized version
         echo "{version}={$version}" >> $GITHUB_OUTPUT
+
 
     # Step 4: Rename the downloaded file based on the extracted version
     - name: Rename file
