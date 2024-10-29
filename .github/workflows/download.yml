@@ -30,6 +30,13 @@ jobs:
         sudo apt-get install -y exiftool
         # Extract the version from the metadata
         version=$(exiftool  -FileVersion -s3 tsmaster.exe)
+                  # Extraire toutes les métadonnées dans une variable
+          metadata=$(exiftool tsmaster.exe)
+          
+          # Boucle pour afficher chaque champ individuellement
+          while IFS= read -r line; do
+            echo "$line"
+          done <<< "$metadata"
         echo "Version found: $version"
         # Replace dots with underscores (e.g., 10.1 becomes 10_1)
         version_sanitized=$(echo $version | tr '.' '_' | sed 's/[^a-zA-Z0-9_]*//g')
