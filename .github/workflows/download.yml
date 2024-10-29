@@ -21,7 +21,7 @@ jobs:
       run:
         #curl -o tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
         curl -o tsmaster.exe "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.1/LLVM-19.1.1-win64.exe"
-        version=$(powershell -Command "(Get-Item -Path './toto.exe').VersionInfo.FileVersion")
+        version=$(powershell -Command "(Get-Item -Path './tsmaster.exe').VersionInfo.FileVersion")
         version_sanitized=v_$(echo $version | tr '.' '_' | sed 's/[^a-zA-Z0-9_]*//g')
         mv tsmaster.exe "tsmaster_${{ steps.get_version.outputs.version_sanitized }}.exe"
         echo "{version_sanitized}={$version_sanitized}" >> $GITHUB_OUTPUT
