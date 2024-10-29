@@ -7,47 +7,24 @@ on:
 
 jobs:
   create_release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-    - name: Check GitHub CLI version
+    - name: Check GitHub CLI version    
       run: gh --version
     # Step 1: Checkout the repository
     - name: Checkout repository
       uses: actions/checkout@v4
     # Step 2: Download the aaa.exe file from the URL
     - name: Download aaa.exe
-      run:
-        #wget -q -O tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
-        
-        wget -q -O tsmaster.exe "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.1/LLVM-19.1.1-win64.exe"
-
-    # Step 3: Extract the version from the executable file
-    - name: Extract exe version
       id: get_version
-      run: |
-        # Install exiftool to read the file's metadata (product version)
-        sudo apt-get install -y exiftool
-        # Extract the version from the metadata
-        version=$(exiftool  -FileVersion -s3 tsmaster.exe)
-                  # Extraire toutes les métadonnées dans une variable
-          metadata=$(exiftool tsmaster.exe)
-          
-          # Boucle pour afficher chaque champ individuellement
-          while IFS= read -r line; do
-            echo "$line"
-          done <<< "$metadata"
-        echo "Version found: $version"
-        # Replace dots with underscores (e.g., 10.1 becomes 10_1)
-        version_sanitized=$(echo $version | tr '.' '_' | sed 's/[^a-zA-Z0-9_]*//g')
-        echo "Sanitized version: $version_sanitized"
-        # Set the output for the extracted version and sanitized version
-        echo "{version}={$version}" >> $GITHUB_OUTPUT
-
-
-    # Step 4: Rename the downloaded file based on the extracted version
-    - name: Rename file
-      run: mv tsmaster.exe "tsmaster_v${{ steps.get_version.outputs.version_sanitized }}.exe"
+      run:
+        #curl -o tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
+        curl -o tsmaster.exe "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.1/LLVM-19.1.1-win64.exe"
+        version=$(powershell -Command "(Get-Item -Path './toto.exe').VersionInfo.FileVersion")
+        version_sanitized=v_$(echo $version | tr '.' '_' | sed 's/[^a-zA-Z0-9_]*//g')
+        mv tsmaster.exe "tsmaster_${{ steps.get_version.outputs.version_sanitized }}.exe"
+        echo "{version_sanitized}={$version_sanitized}" >> $GITHUB_OUTPUT
 
     # Step 5: Check if a release with the extracted version already exists
     - name: Check if release exists
@@ -61,7 +38,7 @@ jobs:
         echo "Available releases:"
         echo "$releases"
     
-        release_exists=$(echo "$releases" | grep "v${{ steps.get_version.outputs.version }}")
+        release_exists=$(echo "$releases" | grep "v${{ steps.get_version.outputs.version_sanitized }}")
 
         if [ -z "$release_exists" ]; then
          echo "Release does not exist."
