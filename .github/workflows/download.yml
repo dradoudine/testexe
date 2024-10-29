@@ -19,8 +19,8 @@ jobs:
     - name: Download aaa.exe
       id: get_version
       run:
-        #curl -o tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
-        curl -o tsmaster.exe "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.1/LLVM-19.1.1-win64.exe"
+        #curl -L -o tsmaster.exe "http://www.tosun.tech/TOSUNSoftware/TSMaster_Setup_alpha.exe"
+        curl -L -o tsmaster.exe "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.1/LLVM-19.1.1-win64.exe"
         version=$(powershell -Command "(Get-Item -Path './tsmaster.exe').VersionInfo.FileVersion")
         version_sanitized=v_$(echo $version | tr '.' '_' | sed 's/[^a-zA-Z0-9_]*//g')
         mv tsmaster.exe "tsmaster_${{ steps.get_version.outputs.version_sanitized }}.exe"
