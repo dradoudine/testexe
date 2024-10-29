@@ -18,9 +18,9 @@ jobs:
     # Step 2: Download the aaa.exe file from the URL
     - name: Download aaa.exe
       id: get_version
-      run:
+      run: |
         echo "Download with CURL"
-        curl -o tsmaster.exe "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.2/LLVM-19.1.2-win64.exe"
+        curl -o tsmaster.exe -L "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.2/LLVM-19.1.2-win64.exe"
         version=$(powershell -Command "(Get-Item -Path './tsmaster.exe').VersionInfo.FileVersion")
         echo "version is $version"
         version_sanitized=v_$(echo $version | tr '.' '_' | sed 's/[^a-zA-Z0-9_]*//g')
