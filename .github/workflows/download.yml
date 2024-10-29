@@ -26,7 +26,7 @@ jobs:
       shell: pwsh
       run: |
         # Vérifie si le fichier existe
-        $version = (Get-Item -Path './toto.exe').VersionInfo.FileVersion
+        $version = (Get-Item -Path './tsmaster.exe').VersionInfo.FileVersion
         # Sanitisation de la version
         $version_sanitized = "v_" + ($version -replace '\.', '_') -replace '[^a-zA-Z0-9_]', ''
             
