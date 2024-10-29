@@ -29,10 +29,9 @@ jobs:
         $version = (Get-Item -Path './tsmaster.exe').VersionInfo.FileVersion
         # Sanitisation de la version
         $version_sanitized = "v_" + ($version -replace '\.', '_') -replace '[^a-zA-Z0-9_]', ''
-            
-        Write-Output "Version: $version"
+        $version_sanitized=v_1.1
         Write-Output "Version Sanitized: $version_sanitized"
-        $newFileName = "tsmaster_$version_sanitized.exe"
+        $newFileName = "tsmaster_$version_sanitized.exe"        
         Rename-Item -Path './tsmaster.exe' -NewName $newFileName
         "$version_sanitized" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
