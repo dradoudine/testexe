@@ -27,9 +27,9 @@ jobs:
       id: get_version
       run: |
         # Install exiftool to read the file's metadata (product version)
-        sudo apt-get install -y wine
+        sudo apt-get install -y exiftool
         # Extract the version from the metadata
-        version=$(wine tsmaster.exe --version 2>&1)
+        version=$(exiftool  -FileVersion -s3 tsmaster.exe)
         echo "Version found: $version"
         # Replace dots with underscores (e.g., 10.1 becomes 10_1)
         version_sanitized=$(echo $version | tr '.' '_' | sed 's/[^a-zA-Z0-9_]*//g')
