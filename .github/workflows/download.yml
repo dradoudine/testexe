@@ -42,7 +42,12 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        sudo apt-get install grep
+        if command -v grep > /dev/null; then
+            echo "grep est disponible"
+        else
+            echo "grep n'est pas disponible"
+            exit 1  # Optionnel : s'arrête si grep n'est pas disponible
+        fi
         # Use GitHub CLI to check if a release with the version tag exists
         echo "Checking for releases with the version tag..."
         releases=$(gh release list)
