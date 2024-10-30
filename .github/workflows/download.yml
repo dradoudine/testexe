@@ -42,24 +42,16 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        if command -v grep > /dev/null; then
-            echo "grep est disponible"
-        else
-            echo "grep n'est pas disponible"
-            exit 1  # Optionnel : s'arrête si grep n'est pas disponible
-        fi
         # Use GitHub CLI to check if a release with the version tag exists
         echo "Checking for releases with the version tag..."
         releases=$(gh release list)
-        gh release list > releases.txt
         echo "Available releases:"
         echo "$releases"
         echo "XXXXXXXXXXXXXXXXXXXXXXXXXXX"
         version_sanitized="${{ steps.extract_version.outputs.extract_version }}"
         echo "$version_sanitized"
-        release_exists=$(grep $version_sanitized releases.txt)
         echo "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
-        release_exists=$(echo "$releases" | grep "$version_sanitized")
+        release_exists=$(echo "$releases" | grep "$version_sanitized") || true
         echo " release existes "
         echo "$release_exists"
         if [ -z "$release_exists" ]; then
