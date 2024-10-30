@@ -33,7 +33,7 @@ jobs:
         Write-Output "Version Sanitized: $version_sanitized"
         $newFileName = "tsmaster_$version_sanitized.exe"        
         Rename-Item -Path './tsmaster.exe' -NewName $newFileName
-        "$version_sanitized" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+        echo "extract_version=$version_sanitized" >> $env:GITHUB_OUTPUT > $null
 
     # Step 5: Check if a release with the extracted version already exists
     - name: Check if release exists
