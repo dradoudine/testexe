@@ -52,10 +52,10 @@ jobs:
 
         if [ -z "$release_exists" ]; then
          echo "Release does not exist."
-         echo "{exists}={false}" >> $GITHUB_OUTPUT
+         echo "exists=false" >> $GITHUB_OUTPUT
         else
           echo "Release already exists."
-          echo "{exists}={true}" >> $GITHUB_OUTPUT
+          echo "exists=true" >> $GITHUB_OUTPUT
         fi
 
     # Step 6: If the release does not exist, create it and upload the renamed file as an asset
