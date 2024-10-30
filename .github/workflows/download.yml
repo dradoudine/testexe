@@ -49,7 +49,7 @@ jobs:
         echo "$releases"
     
         release_exists=$(echo "$releases" | grep "v${{ steps.check_release.outputs.extract_version.version_sanitized }}")
-
+        echo " release existes : $release_exists"
         if [ -z "$release_exists" ]; then
          echo "Release does not exist."
          echo "exists=false" >> $GITHUB_OUTPUT
