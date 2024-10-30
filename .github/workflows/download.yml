@@ -27,13 +27,13 @@ jobs:
       run: |
         # Vérifie si le fichier existe
         $version = (Get-Item -Path './tsmaster.exe').VersionInfo.FileVersion
+        $version="1.1"
         # Sanitisation de la version
-        $version_sanitized = "v_" + ($version -replace '\.', '_') -replace '[^a-zA-Z0-9_]', ''
-        $version_sanitized="v_1.1"
-        Write-Output "Version Sanitized: $version_sanitized"
-        $newFileName = "tsmaster_$version_sanitized.exe"        
+        $release_name = "v_" + ($version -replace '\.', '_') -replace '[^a-zA-Z0-9_]', ''
+        Write-Output "release name: $release_name"
+        $newFileName = "tsmaster_$release_name.exe"        
         Rename-Item -Path './tsmaster.exe' -NewName $newFileName
-        echo "extract_version=$version_sanitized" >> $env:GITHUB_OUTPUT
+        echo "release_name=v_$version_sanitized" >> $env:GITHUB_OUTPUT
 
     # Step 5: Check if a release with the extracted version already exists
     - name: Check if release exists
@@ -46,14 +46,8 @@ jobs:
         echo "Checking for releases with the version tag..."
         releases=$(gh release list)
         echo "Available releases:"
-        echo "$releases"
-        echo "XXXXXXXXXXXXXXXXXXXXXXXXXXX"
-        version_sanitized="${{ steps.extract_version.outputs.extract_version }}"
-        echo "$version_sanitized"
-        echo "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
-        release_exists=$(echo "$releases" | grep "$version_sanitized") || true
-        echo " release existes "
-        echo "$release_exists"
+        release_name="${{ steps.extract_version.outputs.release_name }}"
+        release_exists=$(echo "$releases" | grep "$release_name") || true
         if [ -z "$release_exists" ]; then
          echo "Release does not exist."
          echo "exists=false" >> $GITHUB_OUTPUT
@@ -61,6 +55,7 @@ jobs:
           echo "Release already exists."
           echo "exists=true" >> $GITHUB_OUTPUT
         fi
+        
 
     # Step 6: If the release does not exist, create it and upload the renamed file as an asset
     - name: Create GitHub Release
@@ -68,9 +63,9 @@ jobs:
       if: steps.check_release.outputs.exists == 'false'
       run: |
         # Create a new GitHub release with the extracted version as the tag and upload the renamed file
-        gh release create "v${{ steps.get_version.outputs.version }}" \
-        --title "v${{ steps.get_version.outputs.version }}" \
-        --notes "Release for version v${{ steps.get_version.outputs.version }}" \
-        "tsmaster_v${{ steps.get_version.outputs.version_sanitized }}.exe"
+        gh release create "v${{ steps.extract_version.outputs.release_name }}" \
+        --title "v${{ steps.extract_version.outputs.release_name }}" \
+        --notes "Release for version v${{ steps.extract_version.outputs.release_name }}" \
+        "tsmaster_${{ steps.extract_version.outputs.release_name }}.exe"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
