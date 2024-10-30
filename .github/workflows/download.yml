@@ -47,9 +47,10 @@ jobs:
         releases=$(gh release list)
         echo "Available releases:"
         echo "$releases"
-    
+        echo "XXXXXXXXXXXXXXXXXXXXXXXXXXX"
         release_exists=$(echo "$releases" | grep "v${{ steps.check_release.outputs.extract_version.version_sanitized }}")
-        echo " release existes : $release_exists"
+        echo " release existes "
+        echo "$release_exists"
         if [ -z "$release_exists" ]; then
          echo "Release does not exist."
          echo "exists=false" >> $GITHUB_OUTPUT
