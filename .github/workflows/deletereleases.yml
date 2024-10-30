@@ -1,0 +1,39 @@
+name: Delete Releases and Tags
+
+on:
+  workflow_dispatch: # Permet d'exécuter l'action manuellement
+
+permissions:
+  contents: write  # Nécessaire pour supprimer les tags
+  deployments: write  # Nécessaire pour supprimer les releases
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete all releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Utilisez le token pour l'authentification
+        run: |
+          # Supprimer toutes les releases
+          for release_id in $(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/releases" | \
+            jq -r '.[].id'); do
+            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/$release_id"
+            echo "Deleted release id: $release_id"
+          done
+
+      - name: Delete all tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Utilisez le token pour l'authentification
+        run: |
+          # Supprimer tous les tags
+          for tag in $(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/git/refs/tags" | \
+            jq -r '.[].ref'); do
+            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/git/refs/$tag"
+            echo "Deleted tag: $tag"
+          done
