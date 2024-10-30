@@ -42,6 +42,7 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
+        sudo apt-get install grep
         # Use GitHub CLI to check if a release with the version tag exists
         echo "Checking for releases with the version tag..."
         releases=$(gh release list)
