@@ -31,8 +31,7 @@ jobs:
         # Sanitisation de la version
         $release_name = "v_" + ($version -replace '\.', '_') -replace '[^a-zA-Z0-9_]', ''
         Write-Output "release name: $release_name"
-        echo "release_name=v_$version_sanitized" >> $env:GITHUB_OUTPUT
-
+        "$release_name" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
     # Step 5: Check if a release with the extracted version already exists
     - name: Check if release exists
       id: check_release
