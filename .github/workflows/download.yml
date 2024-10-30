@@ -31,8 +31,6 @@ jobs:
         # Sanitisation de la version
         $release_name = "v_" + ($version -replace '\.', '_') -replace '[^a-zA-Z0-9_]', ''
         Write-Output "release name: $release_name"
-        $newFileName = "tsmaster_$release_name.exe"        
-        Rename-Item -Path './tsmaster.exe' -NewName $newFileName
         echo "release_name=v_$version_sanitized" >> $env:GITHUB_OUTPUT
 
     # Step 5: Check if a release with the extracted version already exists
@@ -55,7 +53,7 @@ jobs:
           echo "Release already exists."
           echo "exists=true" >> $GITHUB_OUTPUT
         fi
-        
+        mv "./tsmaster.exe" "./tsmaster_$release_name.exe"
 
     # Step 6: If the release does not exist, create it and upload the renamed file as an asset
     - name: Create GitHub Release
