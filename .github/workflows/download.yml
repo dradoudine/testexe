@@ -57,7 +57,7 @@ jobs:
         echo "XXXXXXXXXXXXXXXXXXXXXXXXXXX"
         version_sanitized="${{ steps.extract_version.outputs.extract_version }}"
         echo "$version_sanitized"
-        release_exists=$(grep "$version_sanitized" releases.txt)
+        release_exists=$(grep $version_sanitized releases.txt)
         echo "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
         release_exists=$(echo "$releases" | grep "$version_sanitized")
         echo " release existes "
