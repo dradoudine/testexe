@@ -45,11 +45,14 @@ jobs:
         # Use GitHub CLI to check if a release with the version tag exists
         echo "Checking for releases with the version tag..."
         releases=$(gh release list)
+        gh release list > releases.txt
         echo "Available releases:"
         echo "$releases"
         echo "XXXXXXXXXXXXXXXXXXXXXXXXXXX"
         version_sanitized="${{ steps.extract_version.outputs.extract_version }}"
         echo "$version_sanitized"
+        release_exists=$(grep "$version_sanitized" releases.txt)
+        echo "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
         release_exists=$(echo "$releases" | grep "$version_sanitized")
         echo " release existes "
         echo "$release_exists"
