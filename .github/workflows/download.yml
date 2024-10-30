@@ -50,7 +50,7 @@ jobs:
         echo "XXXXXXXXXXXXXXXXXXXXXXXXXXX"
         version_sanitized="${{ steps.extract_version.outputs.extract_version }}"
         echo "$version_sanitized"
-        release_exists=$(echo "$releases" | grep "v${{ steps.extract_version.outputs.version_sanitized }}")
+        release_exists=$(echo "$releases" | grep "v${{ steps.extract_version.outputs.extract_version }}")
         echo " release existes "
         echo "$release_exists"
         if [ -z "$release_exists" ]; then
