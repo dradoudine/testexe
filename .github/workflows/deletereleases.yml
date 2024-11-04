@@ -16,10 +16,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Utilisez le token pour l'authentification
         run: |
+          releases=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/releases" | jq -r '.[].id')
           # Supprimer toutes les releases
-          for release_id in $(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/releases" | \
-            jq -r '.[].id'); do
+          for release_id in $releases; do
             curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
               "https://api.github.com/repos/${{ github.repository }}/releases/$release_id"
             echo "Deleted release id: $release_id"
@@ -30,10 +30,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Utilisez le token pour l'authentification
         run: |
           # Supprimer tous les tags
-          for tag in $(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/git/refs/tags" | \
-            jq -r '.[].ref'); do
-            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/${{ github.repository }}/git/refs/$tag"
-            echo "Deleted tag: $tag"
-          done
+          tags=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/tags" | jq -r '.[].name')
+
+          # Boucle for pour supprimer chaque tag
+          for tag in $tags; do
+            echo "Deleting tag $tag..."
+            curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/$tag"
+          done          
+
