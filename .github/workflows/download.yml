@@ -3,7 +3,7 @@ name: Check, Rename and Create Release
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # Runs once a day at midnight
+    - cron: '0 09 * * *' # Runs once a day at midnight
 
 jobs:
   create_release:
