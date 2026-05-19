@@ -2,22 +2,11 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/websocket"
-    target-branch: "dev"
+  - package-ecosystem: github-actions
+    directory: /
+    commit-message:
+      prefix: ""
     schedule:
-      interval: "weekly"
-    allow:
-      - dependency-name: "all"
-    labels:
-    - "automerge"
-    
-  - package-ecosystem: "pip"
-    directory: "/"
-    target-branch: "dev"
-    schedule:
-      interval: "weekly"
-    allow:
-      - dependency-name: "all"
+      interval: daily
     labels:
     - "automerge"
